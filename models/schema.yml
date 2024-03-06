@@ -1,23 +1,86 @@
 sources:
- - name: gz_raw_data
-   description: gz_raw_data_source
-   tables:
-     - name: raw_gz_sales
-       description: sales of greenweez
-       tests:
-         - unique:
-             column_name: "(pdt_id ||'_'|| orders_id)"
-     - name: raw_gz_product
-       description: product id of greenweez
-       columns:
-         - name: products_id
-           tests:
-            - unique
-            - not_null         
-     - name: raw_gz_ship
-       description: orders id for greenweez
-       columns:
-         - name: orders_id
-           tests:
-            - unique
-            - not_null
+  - name: gz_raw_data
+    description: gz_raw_data_source
+    tables:
+      - name: raw_gz_sales
+        description: sales of greenweez
+        tests:
+          - unique:
+              column_name: "(pdt_id ||'-'|| orders_id)"
+        freshness:
+          warn_after:
+            count: 90
+            period: day
+        loaded_at_field: CAST(date_date AS TIMESTAMP)
+
+
+      - name: raw_gz_product
+        description: product id of greenweez
+        columns:
+          - name: products_id
+            description: products_id
+            tests:
+              - unique
+              - not_null
+      - name: raw_gz_ship
+        description: orders id for greenweez
+        columns:
+          - name: orders_id
+            description: orders_id
+            tests:
+              - unique
+              - not_null
+
+    
+      - name: adwords
+        identifier: raw_gz_adwords
+        description: information about adwords platform
+      - name: bing
+        identifier: raw_gz_bing
+        description: information about bing platform
+      - name: criteo
+        identifier: raw_gz_criteo
+        description: information about criteo platform
+      - name: facebook
+        identifier: raw_gz_facebook
+        description: information about facebook platform
+
+
+      - name: int_campaigns
+        description: data from all campaigns
+        tests:
+          - unique:
+               column_name: "(campaign_key || '-' || date_date)"
+          - not_null:
+              column_name:
+                 - paid_source
+                 - campaign_name
+
+models:
+  - name: int_campaigns_day
+    description: >
+      Aggregated version of int_campaigns model for each day, including total ads_cost, impression, and clicks.
+    tests:
+      - unique:
+          column_name: "(campaign_key || '-' || date_date)"
+      - not_null:
+          column_name:
+            - paid_source
+            - campaign_name
+
+models:
+  - name: finance_campaigns_day
+    description: global kpi
+    columns:
+      - name: ads_margin
+        description: operational_margin - ads_cost
+      - name: average_basket
+        description: average basket cost for each day 
+    tests:
+      - not_null:
+          column_name:
+            - ads_margin
+            - average_basket
+
+
+

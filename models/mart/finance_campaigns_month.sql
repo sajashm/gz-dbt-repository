@@ -17,4 +17,4 @@ FROM {{ ref('int_campaigns_day') }}
 FULL OUTER JOIN {{ ref('finance_days') }} 
   USING (date_date)
 GROUP BY datemonth
-ORDER BY datemonth desc
+ORDER BY datemonth desc 

@@ -1,0 +1,23 @@
+sources:
+ - name: gz_raw_data
+   description: gz_raw_data_source
+   tables:
+     - name: raw_gz_sales
+       description: sales of greenweez
+       tests:
+         - unique:
+             column_name: "(pdt_id ||'_'|| orders_id)"
+     - name: raw_gz_product
+       description: product id of greenweez
+       columns:
+         - name: products_id
+           tests:
+            - unique
+            - not_null         
+     - name: raw_gz_ship
+       description: orders id for greenweez
+       columns:
+         - name: orders_id
+           tests:
+            - unique
+            - not_null
